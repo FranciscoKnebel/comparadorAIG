@@ -8,7 +8,7 @@ AAGReader::AAGReader(string sourcePath) {
 Aig* AAGReader::readFile() {
 	//treating header
 	source.getline(buf, 250, '\n');
-	string s=buf;
+	string s = buf;
 	line.str(s);
 	line >> word;
 
@@ -39,7 +39,12 @@ Aig* AAGReader::readFile() {
 		return NULL;
 	}
 
-	debug << s << "\nThe file header is ok!\n\n";
+	debug << s << "\nThe file header is ok!\n";
+	debug << "\nNodes: " << nNodes;
+	debug << "\nInputs: " << nInputs;
+	debug << "\nFFs: " << nFFs;
+	debug << "\nOutputs: " << nOutputs;
+	debug << "\nAnds: " << nAnds << "\n\n";
 
 	AigNode nodes[nNodes + 1];
 	AigNode outs[nOutputs];
