@@ -5,19 +5,7 @@ AAGReader::AAGReader(string sourcePath) {
 	debug.open("dst/aagComentado.txt");
 }
 
-Aig* AAGReader::readFile() {
-	//treating header
-	source.getline(buf, 250, '\n');
-	string s = buf;
-	line.str(s);
-	line >> word;
-
-	if(strcmp("aag",word.c_str()) != 0) {
-		debug << "the file is not an AAG file!";
-		return NULL;
-	}
-
-	int nNodes, nInputs, nFFs, nOutputs, nAnds;
+int AAGReader::readHeader() {
 	line >> word;
 	nNodes = atoi(word.c_str());
 	line >> word;
@@ -30,68 +18,95 @@ Aig* AAGReader::readFile() {
 	nAnds = atoi(word.c_str());
 
 	if (nNodes != nInputs + nFFs + nAnds) {
-		debug << "Wrong file header";
-		return NULL;
+		debug << "Wrong file header\n";
+		return 0;
 	}
 
 	if (nFFs != 0) {
-		debug << "FF not supported yet";
-		return NULL;
+		debug << "FF not supported yet\n";
+		return 0;
 	}
 
-	debug << s << "\nThe file header is ok!\n";
+	debug << "The file header is ok!\n";
 	debug << "\nNodes: " << nNodes;
 	debug << "\nInputs: " << nInputs;
 	debug << "\nFFs: " << nFFs;
 	debug << "\nOutputs: " << nOutputs;
 	debug << "\nAnds: " << nAnds << "\n\n";
 
-	AigNode nodes[nNodes + 1];
-	AigNode outs[nOutputs];
-	AigNode ins[nInputs];
+	return 1;
+}
 
-	//treating inputs
-	for (int i = 0; i < nInputs; i++) {
-		debug << "read the input" << i << " from the file\n";
-		debug << "   create in" << i << " and add it to an input list and the all nodes list\n";
+AIG* AAGReader::readFile() {
+	//treating header
+	source.getline(buffer, 250, '\n');
+	string s = buffer;
+	line.str(s);
+	line >> word;
+
+	if(strcmp("aag", word.c_str()) != 0) {
+		debug << "the file is not an AAG file!";
+		return NULL;
 	}
 
-	//treating outputs
-	debug << "\n";
-	for (int i = 0; i < nOutputs; i++) {
-		debug << "read the output" << i << " from the file\n";
-		debug << "   create out" << i << " and add it to an output list and the all nodes list\n";
-	}
+	if(!readHeader())	return NULL;
 
-	//connecting ands
-	debug << "\n";
-	for (int i = 0; i < nAnds; i++) {
-		debug << "read the and" << i << " output and inputs\n";
-		debug << "   connect the and" << i << " and set the inversion of this pins\n";
-	}
+	int i = 1;
+	AIG graph(nNodes);
 
-	int i=0;
-	debug << "\n";
+	debug << "create the AIG and add all nodes\n";
 	while(source) {
-		source.getline(buf, 250, '\n');
-		s=buf;
-		line.seekg(0);line.str(s);
+		source.getline(buffer, 250, '\n');
+		s = buffer;
+
+		line.seekg(0);
+		line.str(s);
 		line >> word;
 
-		if(strcmp("c",word.substr(0).c_str()) == 0) {
+		if(i >= 1 && i < 1 + nInputs) {
+			// Reading inputs from file
+			int node_index = stoi(word.substr(0).c_str());
+			debug << "input " << node_index << endl;
+
+			graph.insertInput(node_index);
+		} else if(i >= 1 + nInputs && i < 1 + nInputs + nOutputs) {
+			// Reading outputs from file
+			int node_index = stoi(word.substr(0).c_str());
+			debug << "output " << node_index << endl;
+
+			graph.insertOutput(node_index);
+		} else if(i >= 1 + nInputs + nOutputs && i < 1 + nInputs + nOutputs + nAnds) {
+			// Reading AND operations from file
+			// and index entrada0 entrada1
+			int node_index = stoi(word.substr(0).c_str());
+			line >> word;
+			int input0_node = stoi(word.substr(0).c_str());
+			line >> word;
+			int input1_node = stoi(word.substr(0).c_str());
+
+			debug << "and " << node_index << " ";
+			debug << input0_node << " ";
+			debug << input1_node << endl;
+
+			graph.insertAND(node_index, input0_node, input1_node);
+		} else if(word.substr(0).c_str()[0] == 'c') {
 			debug << "the comments began. Ignore the file from here!\n";
 			break;
-		} else if(strcmp(word.substr(0).c_str(),"i") == 0) {
-
-		} else if(strcmp(word.substr(0).c_str(),"o") == 0) {
-
-		} else if(strcmp(word.substr(0).c_str(),"l") == 0) {
-
+		} else if(word.substr(0).c_str()[0] == 'i') { // naming inputs, ignored.
+			debug << "(ignored) Input " << word.substr(0).c_str() << endl;
+		} else if(word.substr(0).c_str()[0] == 'o') { // naming outputs, ignored.
+			debug << "(ignored) Output " << word.substr(0).c_str() << endl;
 		}
+
+		i++;
 	}
 
-	debug << "\ncreate the AIG and add all nodes\n";
-	debug << "return the AIG";
+	debug << "returning the AIG\n";
+
+	graph.getOutputExpressions();
+
+	source.close();
+	debug.close();
 
 	return NULL;
 }

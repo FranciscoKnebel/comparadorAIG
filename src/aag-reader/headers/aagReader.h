@@ -1,6 +1,7 @@
 #ifndef AAGREADER_H
 #define AAGREADER_H
 
+#include "util.h"
 #include "aig.h"
 
 #include <cstdlib>
@@ -15,15 +16,19 @@ using namespace std;
 
 class AAGReader {
   private:
+		// File Header
+		int readHeader();
+		int nNodes, nInputs, nFFs, nOutputs, nAnds;
+
     ifstream source;
     ofstream debug;
     string word;
-    char buf[250];
+    char buffer[250];
     istringstream line;
 
   public:
     AAGReader(string sourcePath);
-    Aig* readFile();
+    AIG* readFile();
 };
 
 #endif // AAGREADER_H
