@@ -2,7 +2,7 @@
 
 AAGReader::AAGReader(string sourcePath) {
 	source.open(sourcePath.c_str());
-	debug.open("aagComentado.txt");
+	debug.open("dst/aagComentado.txt");
 }
 
 Aig* AAGReader::readFile() {

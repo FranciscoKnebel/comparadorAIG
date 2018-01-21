@@ -1,26 +1,53 @@
+## COMPILER
 CC = g++
 CFLAGS = -Wall -g
 
-EXECUTABLE = main
-LOG = aagComentado.txt
-
-HEADER_DIR = headers/
+## DIRECTORIES
 SRC_DIR = src/
+DST_DIR = dst/
+HEADER_DIR = headers/
 
+### MODULE DIRECTORIES
+AAG_READER_DIR = $(SRC_DIR)aag-reader/
+BDD_DIR = $(SRC_DIR)bdd-cmp/
 
-FILES = $(SRC_DIR)main.cpp $(SRC_DIR)aagReader.cpp $(SRC_DIR)aig.cpp
-all: $(FILES)
-	$(CC) $(CFLAGS) $(FILES) -o $(EXECUTABLE) -I$(HEADER_DIR)
+all: aag bdd
+	@echo "Todos módulos compilados."
+
+#############################################
+## AAG READER
+AAG_READER = $(DST_DIR)aag-reader
+AAG_FILES = $(AAG_READER_DIR)main.cpp $(AAG_READER_DIR)aagReader.cpp $(AAG_READER_DIR)aig.cpp
+aag: $(AAG_FILES)
+	$(CC) $(CFLAGS) $(AAG_FILES) -o $(AAG_READER) -I$(AAG_READER_DIR)$(HEADER_DIR)
+#############################################
+## BDD
+BDD_TESTER = $(DST_DIR)testBDD
+BDD_FILES = $(BDD_DIR)testBDD.cpp $(BDD_DIR)gerentebdd.cpp
+bdd: $(BDD_FILES)
+	$(CC) $(BDD_FILES) -o $(BDD_TESTER) -I$(BDD_DIR)$(HEADER_DIR)
+#############################################
+## TEST
+test: test-aag test-bdd
+	@echo "\n\nTESTES FINALIZADOS."
 
 EXAMPLE_FILE = examples/C17.aag
-run: $(EXECUTABLE)
-	./$(EXECUTABLE) $(EXAMPLE_FILE)
+LOG = $(DST_DIR)aagComentado.txt
+test-aag: aag
+	@echo "\nTESTE DO LEITOR DE AAG\n"
+	./$(AAG_READER) $(EXAMPLE_FILE)
 	@echo "Execução encerrada.\n"
-	make dump
-
-dump: $(LOG)
 	@echo "Dump do log.\n"
-	@tput setaf 1 			# Alterar cor do output para vermelho
 	@cat $(LOG)
-	@echo "\n"
-	@tput setaf default # Retornar para cor padrão.
+
+test-bdd: bdd
+	@echo "\nTESTE DO COMPARADOR UTILIZANDO BDD\n"
+	@echo "FUNÇÕES EQUIVALENTES"
+	./$(BDD_TESTER) "!(!(v2*v4*!(v2*v4))*!(!(v2*v4)*v2*v4))" "!(!(v2*v4)*!(v2*v4))*!(v2*v4*v2*v4)"
+	@echo "\nFUNÇÕES NÃO-EQUIVALENTES"
+	./$(BDD_TESTER) "!(v2*v4)" "!(!(v2*v4))"
+	@echo
+	./$(BDD_TESTER) "(!(v2*v4*!(v2*v4))*!(!(v2*v4)*v2*v4))" "!(!(v2*v4)*!(v2*v4))*!(v2*v4*v2*v4)"
+#############################################
+clean:
+	rm $(DST_DIR)* -rf
