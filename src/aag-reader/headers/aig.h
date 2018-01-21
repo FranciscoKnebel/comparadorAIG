@@ -8,57 +8,30 @@
 
 using namespace std;
 
-class AigNode {
+class AIGnode {
 	public:
-	  //virtual ~nodoaig()=0;
-	  //virtual void xxx()=0;
+		int i0;
+		int i1;
+		bool isInput;
+		string expression;
+
+		AIGnode();
+		AIGnode(int i0, int i1, bool isInput, string expression);
+		AIGnode(const AIGnode& node);
+		void printValues();
 };
 
-class AndNode:public AigNode {
-	int i0;
-	int i1;
-	int saida;
+class AIG {
+	map<int,AIGnode*>::iterator iterator;
+	map<int,AIGnode*> nodes;
+
+	vector<int> output_indexes;
 
 	public:
-		AndNode(int, int, int);
-		//void imprime(ostream& saida);
-		friend class Aig;  //sera que precisa?
-};
-
-
-class InputNode:public AigNode {
-	int saida;
-	public:
-		InputNode(int);
-		//void imprime(ostream& saida);
-		friend class Aig;  //sera que precisa?
-};
-
-class OutputNode:public AigNode {
-	int i0;
-
-	public:
-	  OutputNode(int);
-	  //void imprime(ostream& saida);
-	  friend class Aig;  //sera que precisa?
-};
-
-class Aig {
-	int ni;
-	int no;
-	int maxvar_index;
-	int nl;
-	int na;
-
-	map<int,AigNode*> nodos; //deve conter todos os nodos and e entradas
-	map<int,AigNode*> saidas; //deve conter todas as saidas
-	//alternativas ao map:
-	//a1) o map poderia ser um vetor?
-	//a2) poderia ser sem vetor e sem map, mas ser uma netlist onde existe
-	//um vetor ou lista para cada rede?
-	//a3) botar uma lista de consumidores da saidas dentro da propria and
-	public:
-		bool insert(AndNode *);
-		bool insert(InputNode *);
-		bool insert(OutputNode *);
+		AIG(int);
+		void insertInput(int index);
+		void insertOutput(int index);
+		void insertAND(int index_node, int input0, int input1);
+		string buildNodeExpression(int node_index);
+		vector<string> getOutputExpressions();
 };
