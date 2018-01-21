@@ -52,7 +52,7 @@ AIG* AAGReader::readFile() {
 	if(!readHeader())	return NULL;
 
 	int i = 1;
-	AIG graph(nNodes);
+	AIG* graph = new AIG(nNodes);
 
 	debug << "create the AIG and add all nodes\n";
 	while(source) {
@@ -68,13 +68,13 @@ AIG* AAGReader::readFile() {
 			int node_index = stoi(word.substr(0).c_str());
 			debug << "input " << node_index << endl;
 
-			graph.insertInput(node_index);
+			graph->insertInput(node_index);
 		} else if(i >= 1 + nInputs && i < 1 + nInputs + nOutputs) {
 			// Reading outputs from file
 			int node_index = stoi(word.substr(0).c_str());
 			debug << "output " << node_index << endl;
 
-			graph.insertOutput(node_index);
+			graph->insertOutput(node_index);
 		} else if(i >= 1 + nInputs + nOutputs && i < 1 + nInputs + nOutputs + nAnds) {
 			// Reading AND operations from file
 			// and index entrada0 entrada1
@@ -88,7 +88,7 @@ AIG* AAGReader::readFile() {
 			debug << input0_node << " ";
 			debug << input1_node << endl;
 
-			graph.insertAND(node_index, input0_node, input1_node);
+			graph->insertAND(node_index, input0_node, input1_node);
 		} else if(word.substr(0).c_str()[0] == 'c') {
 			debug << "the comments began. Ignore the file from here!\n";
 			break;
@@ -103,10 +103,8 @@ AIG* AAGReader::readFile() {
 
 	debug << "returning the AIG\n";
 
-	graph.getOutputExpressions();
-
 	source.close();
 	debug.close();
 
-	return NULL;
+	return graph;
 }

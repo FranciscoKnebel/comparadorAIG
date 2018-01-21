@@ -11,7 +11,12 @@ int main(int argc, char* argv[]) {
 	}
 
   AAGReader reader(argv[1]);
-  reader.readFile();
+  AIG* graph = reader.readFile();
+
+	vector<string> expressions = graph->getOutputExpressions();
+	for (size_t i = 0; i < expressions.size(); i++) {
+		cout << "Output " << i << ": " << expressions[i] << endl;
+	}
 
   return EXIT_SUCCESS;
 }
