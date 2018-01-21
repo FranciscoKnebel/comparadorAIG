@@ -124,7 +124,7 @@
         <Property name="actionCommand" type="java.lang.String" value="Comparar via SAT"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCompararSATActionPerformed"/>
+        <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="btnCompararSATMousePressed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="j_aag2">
@@ -142,7 +142,7 @@
         <Property name="text" type="java.lang.String" value="Comparar via BDD"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCompararBDDActionPerformed"/>
+        <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="btnCompararBDDMousePressed"/>
       </Events>
     </Component>
   </SubComponents>

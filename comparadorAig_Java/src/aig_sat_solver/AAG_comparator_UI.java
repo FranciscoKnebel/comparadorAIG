@@ -60,9 +60,9 @@ public class AAG_comparator_UI extends javax.swing.JFrame {
         btnCompararSAT.setFont(new java.awt.Font("DejaVu Sans", 1, 13)); // NOI18N
         btnCompararSAT.setText("Comparar via Sat");
         btnCompararSAT.setActionCommand("Comparar via SAT");
-        btnCompararSAT.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCompararSATActionPerformed(evt);
+        btnCompararSAT.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                btnCompararSATMousePressed(evt);
             }
         });
 
@@ -70,9 +70,9 @@ public class AAG_comparator_UI extends javax.swing.JFrame {
 
         btnCompararBDD.setFont(new java.awt.Font("DejaVu Sans", 1, 13)); // NOI18N
         btnCompararBDD.setText("Comparar via BDD");
-        btnCompararBDD.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCompararBDDActionPerformed(evt);
+        btnCompararBDD.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                btnCompararBDDMousePressed(evt);
             }
         });
 
@@ -126,7 +126,21 @@ public class AAG_comparator_UI extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnCompararSATActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCompararSATActionPerformed
+    private void btnCompararBDDMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCompararBDDMousePressed
+        // TODO add your handling code here:
+        btnCompararBDD.setEnabled(false);
+        String arquivo1 = j_aag1.getText().toString();
+        String arquivo2 = j_aag2.getText().toString();
+        ComparadorAAGs comparador = new ComparadorAAGs();
+        if(comparador.compararBdd(arquivo1, arquivo2)){
+            JOptionPane.showMessageDialog(rootPane, "AAGs equivalentes", "Resultado", JOptionPane.INFORMATION_MESSAGE, null);
+        } else{
+            JOptionPane.showMessageDialog(rootPane, "AAGs não equivalentes!", "Resultado", JOptionPane.ERROR_MESSAGE, null);
+        }
+        btnCompararBDD.setEnabled(true);
+    }//GEN-LAST:event_btnCompararBDDMousePressed
+
+    private void btnCompararSATMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCompararSATMousePressed
         // TODO add your handling code here:
         String arquivo1 = j_aag1.getText().toString();
         String arquivo2 = j_aag2.getText().toString();
@@ -136,20 +150,7 @@ public class AAG_comparator_UI extends javax.swing.JFrame {
         } else{
             JOptionPane.showMessageDialog(rootPane, "AAGs não equivalentes!", "Resultado", JOptionPane.ERROR_MESSAGE, null);
         }
-        
-    }//GEN-LAST:event_btnCompararSATActionPerformed
-
-    private void btnCompararBDDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCompararBDDActionPerformed
-        // TODO add your handling code here:
-        String arquivo1 = j_aag1.getText().toString();
-        String arquivo2 = j_aag2.getText().toString();
-        ComparadorAAGs comparador = new ComparadorAAGs();
-        if(comparador.compararBdd(arquivo1, arquivo2)){
-            JOptionPane.showMessageDialog(rootPane, "AAGs equivalentes", "Resultado", JOptionPane.INFORMATION_MESSAGE, null);
-        } else{
-            JOptionPane.showMessageDialog(rootPane, "AAGs não equivalentes!", "Resultado", JOptionPane.ERROR_MESSAGE, null);
-        }
-    }//GEN-LAST:event_btnCompararBDDActionPerformed
+    }//GEN-LAST:event_btnCompararSATMousePressed
 
     /**
      * @param args the command line arguments

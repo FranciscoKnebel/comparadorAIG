@@ -13,7 +13,7 @@ public class AIG {
     int input1;
     int input2;
     int output;
-    String tseytin;
+    String equacao;
     
     public AIG(int input1, int input2, int output){
         this.input1 = input1;
@@ -23,6 +23,6 @@ public class AIG {
     
     @Override
     public String toString(){
-        return "Input1: "+input1+" Input2: "+input2+" Output: "+output + " Tseytin: " + tseytin;
+        return "Input1: "+input1+" Input2: "+input2+" Output: "+output + " Equacao: " + equacao;
     }
 }
