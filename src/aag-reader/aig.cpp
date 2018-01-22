@@ -29,7 +29,13 @@ void AIGnode::printValues() {
 	cout << "expression: " << expression << endl;
 }
 
-AIG::AIG(int nNodes) {
+AIG::AIG(int params_nNodes, int params_nInputs, int params_nFFs, int params_nOutputs, int params_nAnds) {
+	nNodes = params_nNodes;
+	nInputs = params_nInputs;
+	nFFs = params_nFFs;
+	nOutputs = params_nOutputs;
+	nAnds = params_nAnds;
+
 	iterator = nodes.begin();
 
 	// Initialize graph

@@ -8,6 +8,11 @@ int main(int argc, char *argv[]) {
   gerentebdd g;
   set<string> conjunto_variaveis;
 
+	if(argc < 2) {
+		cout << "Esperando argumento para nome do arquivo.\n";
+		return 1;
+	}
+
 	//////////////////////////////////////////////////////////
 	// Ler expressões lógicas do arquivo argv[1]
 	// Formato:
@@ -23,9 +28,6 @@ int main(int argc, char *argv[]) {
 	getline(t, line);
 	string expr2 = line;
 	t.close();
-	// cout << "1: " << expr1 << endl;
-	// cout << "2: " << expr2 << endl;
-
 
   nodobdd *nd1 = g.create_from_equation(expr1, conjunto_variaveis);
   nodobdd *nd2 = g.create_from_equation(expr2, conjunto_variaveis);

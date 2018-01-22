@@ -8,6 +8,9 @@
 
 using namespace std;
 
+#ifndef AIG_H
+#define AIG_H
+
 class AIGnode {
 	public:
 		int i0;
@@ -26,12 +29,15 @@ class AIG {
 	map<int,AIGnode*> nodes;
 
 	vector<int> output_indexes;
+	int nNodes, nInputs, nFFs, nOutputs, nAnds;
 
 	public:
-		AIG(int);
+		AIG(int params_nNodes, int params_nInputs, int params_nFFs, int params_nOutputs, int params_nAnds);
 		void insertInput(int index);
 		void insertOutput(int index);
 		void insertAND(int index_node, int input0, int input1);
 		string buildNodeExpression(int node_index);
 		vector<string> getOutputExpressions();
 };
+
+#endif

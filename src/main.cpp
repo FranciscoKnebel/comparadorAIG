@@ -82,7 +82,13 @@ int main(int argc, char* argv[]) {
 			string exp1 = outputExpressions1[i];
 			string exp2 = outputExpressions2[i];
 
-			string command = "./dst/bdd-cmp \"" + exp1 + "\" \"" + exp2 + "\"";
+			// Salvar expressões em arquivo para leitura pelo comparador.
+			ofstream file;
+			file.open("dst/expressoes.txt");
+			file << exp1 << "\n" << exp2;
+			file.close();
+
+			string command = "./dst/bdd-cmp-file \"dst/expressoes.txt\"";
 			begin_time = Clock::now();
 			string response = exec(command.c_str());
 			cout << " (" << chrono::duration_cast<chrono::milliseconds>(Clock::now() - begin_time).count() << "ms" << ")";

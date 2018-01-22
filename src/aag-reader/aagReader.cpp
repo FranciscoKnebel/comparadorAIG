@@ -52,7 +52,7 @@ AIG* AAGReader::readFile() {
 	if(!readHeader())	return NULL;
 
 	int i = 1;
-	AIG* graph = new AIG(nNodes);
+	AIG* graph = new AIG(nNodes, nInputs, nFFs, nOutputs, nAnds);
 
 	debug << "create the AIG and add all nodes\n";
 	while(source) {
