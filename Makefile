@@ -89,9 +89,13 @@ test-bdd-file: bdd-file dst/expressoes.txt
 	@echo "\nTESTE DO COMPARADOR UTILIZANDO BDD, utilizando arquivos.\n"
 	./$(BDD_TESTER)-file dst/expressoes.txt
 
-test-minisat: ext/cryptominisat5
-	./ext/cryptominisat5 --verb 0 examples/cnf/satisfiable.cnf
-	./ext/cryptominisat5 --verb 0 examples/cnf/unsatisfiable.cnf
+test-minisat: test-minisat-1 test-minisat-2
+
+test-minisat-1: ext/cryptominisat5
+	./ext/cryptominisat5_Linux64 --verb 0 examples/cnf/satisfiable.cnf
+
+test-minisat-2:
+	./ext/cryptominisat5_simple --verb=0 examples/cnf/unsatisfiable.cnf
 
 #############################################
 clean:

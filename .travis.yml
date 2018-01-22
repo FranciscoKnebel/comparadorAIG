@@ -6,3 +6,4 @@ script:
   - g++ --version
   - make
   - make test
+  - make test-minisat
