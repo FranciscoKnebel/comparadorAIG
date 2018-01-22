@@ -31,9 +31,9 @@ int main(int argc, char *argv[]) {
 	//////////////////////////////////////////////////////////
 
 	if (nd1 == nd2) {
-		cout << "As duas expressões são iguais." << endl;
+		cout << "TRUE";
 	} else {
-		cout << "Expressões são diferentes." << endl;
+		cout << "FALSE";
 	}
 
   return EXIT_SUCCESS;

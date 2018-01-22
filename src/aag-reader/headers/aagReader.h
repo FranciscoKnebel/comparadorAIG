@@ -5,12 +5,16 @@
 #include "aig.h"
 
 #include <cstdlib>
+#include <cstring>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <list>
 
-#include <string.h>
+#include <memory>
+#include <stdexcept>
+#include <chrono>
+
 
 using namespace std;
 

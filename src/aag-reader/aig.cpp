@@ -88,14 +88,21 @@ string AIG::buildNodeExpression(int index) {
 
 	// Get node expression recursively
 	string expression;
-	if (Util::isOdd(node->i0) && Util::isOdd(node->i1))
-		expression = "!(" + buildNodeExpression(node->i0 - 1) + ")*!(" + buildNodeExpression(node->i1 - 1) + ")";
-	else if (Util::isOdd(node->i0) && Util::isEven(node->i1))
-		expression = "!(" + buildNodeExpression(node->i0 - 1) + ")*" + buildNodeExpression(node->i1);
-	else if (Util::isEven(node->i0) && Util::isOdd(node->i1))
-		expression = buildNodeExpression(node->i0) + "*!(" + buildNodeExpression(node->i1 - 1) + ")";
-	else if (Util::isEven(node->i0) && Util::isEven(node->i1))
-		expression = buildNodeExpression(node->i0) + "*" + buildNodeExpression(node->i1);
+	string i0_expression;
+	string i1_expression;
+
+	if(Util::isOdd(node->i0)) {
+		i0_expression = "!(" + buildNodeExpression(node->i0 - 1) + ")";
+	} else {
+		i0_expression = buildNodeExpression(node->i0);
+	}
+
+	if(Util::isOdd(node->i1)) {
+		i1_expression = "!(" + buildNodeExpression(node->i1 - 1) + ")";
+	} else {
+		i1_expression = buildNodeExpression(node->i1);
+	}
+	expression = i0_expression + "*" + i1_expression;
 
 	// Is node output negated?
 	if(Util::isOdd(index)) {
