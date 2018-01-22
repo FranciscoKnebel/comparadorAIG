@@ -3,19 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package aig_sat_solver;
+package aig_sat_bdd_solver;
 
 /**
  *
  * @author luciano
  */
-public class AIG {
+public class AigNode {
     int input1;
     int input2;
     int output;
     String equacao;
     
-    public AIG(int input1, int input2, int output){
+    public AigNode(int input1, int input2, int output){
         this.input1 = input1;
         this.input2 = input2;
         this.output = output;

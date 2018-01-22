@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package aig_sat_solver;
+package aig_sat_bdd_solver;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -27,8 +27,10 @@ public class ComparadorAAGs {
     
     ArrayList<Integer> arrayEntradas1;
     ArrayList<Integer> arraySaidas1;
-    ArrayList<AIG> arrayAigs1;
+    ArrayList<AigNode> arrayAigNodesBdd1;
+    ArrayList<AigNode> arrayAigNodesSat1;
     ArrayList<String> arrayEquacoesBdd1;
+    ArrayList<String> arrayEquacoesSat1;
     
         
     int entradas2 = 0;
@@ -37,96 +39,107 @@ public class ComparadorAAGs {
     
     ArrayList<Integer> arrayEntradas2; 
     ArrayList<Integer> arraySaidas2;
-    ArrayList<AIG> arrayAigs2;
+    ArrayList<AigNode> arrayAigNodesBdd2;
+    ArrayList<AigNode> arrayAigNodesSat2;
     ArrayList<String> arrayEquacoesBdd2;
+    ArrayList<String> arrayEquacoesSat2;
     
     
         
     boolean compararSat(String arquivo1, String arquivo2) {
-        //System.out.println(System.getProperty("user.dir"));
-        //System.out.println(new File(arquivo1).getAbsolutePath());
-        //System.out.println(new File(arquivo2).getAbsolutePath());
+        
         readFile_parseAIG(arquivo1, 1);
         readFile_parseAIG(arquivo2, 2);
-        for(int i =0; i< arrayAigs1.size(); i++){
-            createTseytinExpr(arrayAigs1.get(i), 1);
+        
+        //primeiro aag
+        for(int i =0; i< arrayAigNodesSat1.size(); i++){
+            createSatExpr(arrayAigNodesSat1.get(i), 1);
         }
-        for(int i =0; i< arrayAigs1.size(); i++){
-            System.out.println(arrayAigs1.get(i).toString());
+        geraSaidasSat(1);
+        for(int i =0; i< arrayAigNodesSat1.size(); i++){
+            System.out.println(arrayAigNodesSat1.get(i).toString());
+        }
+        
+        //segundo aag
+        for(int i =0; i< arrayAigNodesSat2.size(); i++){
+            createSatExpr(arrayAigNodesSat2.get(i), 2);
+        }
+        geraSaidasSat(2);
+        for(int i =0; i< arrayAigNodesSat2.size(); i++){
+            System.out.println(arrayAigNodesSat2.get(i).toString());
         }
   
-        return false;
+        int numeroSaidas = arrayEquacoesSat1.size();
+        
+        // os aags tem o mesmo numero de saidas, então usa o de um só
+        for(int i=0; i<numeroSaidas; i++){
+            if(!isSatExpressionEquivalent(arrayEquacoesSat1.get(i), arrayEquacoesSat2.get(i))){
+                return false;
+            }
+        }
+        
+        for(int i=0; i< arrayAigNodesSat1.size(); i++){
+            System.out.println(arrayAigNodesSat1.get(i).equacao);
+        }
+        
+        return true;
+        
     }
     
-    private void createTseytinExpr(AIG aig, int numberArray) {
-        String tseytin1 = "";
-        String tseytin2 = "";
-        String tseytinFinal = "";
-        AIG aigEntrada1 = null;
-        AIG aigEntrada2 = null;
-        boolean ehNegado1 = false;
-        boolean ehNegado2 = false;
+    private void createSatExpr(AigNode aig, int numberArray) {
+        String expressao1 = "";
+        String expressao2 = "";
+        String expressaoFinal = "";
+        AigNode aigEntrada1 = null;
+        AigNode aigEntrada2 = null;
+        
         if(numberArray == 1){
-            aigEntrada1 = searchAig(arrayAigs1, aig.input1);
-            aigEntrada2 = searchAig(arrayAigs1, aig.input1);
+            aigEntrada1 = searchAigNode(arrayAigNodesSat1, aig.input1);
+            aigEntrada2 = searchAigNode(arrayAigNodesSat1, aig.input2);
         } else{
-            aigEntrada1 = searchAig(arrayAigs2, aig.input1);
-            aigEntrada2 = searchAig(arrayAigs2, aig.input1);
+            aigEntrada1 = searchAigNode(arrayAigNodesSat2, aig.input1);
+            aigEntrada2 = searchAigNode(arrayAigNodesSat2, aig.input2);
         }
         
-        if(aigEntrada1 != null){
-            tseytin1 = aigEntrada1.equacao;
+        
+        if(ehEntrada(aig.input1, numberArray)){
+            expressao1 = "n" + aig.input1;
+        } else if (ehEntrada((aig.input1 - 1), numberArray)){
+            expressao1 = "!n" + (aig.input1 - 1);
+        } else{
+            expressao1 = aigEntrada1.equacao;
+            if(aig.input1 %2 != 0){ // é impar, nega a entrada
+                expressao1 = "!(" + expressao1 + ")";
+            }
         }
-        if(aigEntrada2 != null){
-            tseytin2 = aigEntrada2.equacao;
+        if(ehEntrada(aig.input2, numberArray)){
+            expressao2 = "n" + aig.input2;
+        } else if (ehEntrada((aig.input2 - 1), numberArray)){
+            expressao2 = "!n" + (aig.input2 - 1);
+        } else{
+            expressao2 = aigEntrada2.equacao;
+            if(aig.input2 %2 != 0){ // é impar, nega a entrada
+            expressao2 = "!("+expressao2+")";
+        }
         }
         
-        if(aig.input1 %2 != 0){ // é impar
-            tseytin1 = tseytin1 + "*(_" + (aig.input1 - 1) + "+" + "x" + (aig.input1 - 1) + ")" + "*(!_" + (aig.input1 - 1) + "+" + "!x" + (aig.input1 - 1) + ")";
-            ehNegado1 = true;
-        }
-        if(aig.input2 %2 != 0){ // é impar
-            tseytin2 = tseytin2 + "*(_" + (aig.input2 - 1) + "+" + "x" + (aig.input2 - 1) + ")" + "*(!_" + (aig.input2 - 1) + "+" + "!x" + (aig.input2 - 1) + ")";
-            ehNegado2 = true;
-        }
-        //!_8+!_6+_14)*(_8+!_14)*(_6+!_14)
-        // cria o and...
-        if(!ehNegado1 && !ehNegado2){
-            tseytinFinal = "(!_" + aig.input1 + "+" +  "!_" + aig.input2 + "+" + "_" + aig.output + ")"
-                       + "*(_" + aig.input1 + "+" + "!_" + aig.output + ")*(_" + aig.input2 + "+" + "!_" + aig.output + ")";                       
-        } else if(ehNegado1 && !ehNegado2){
-            tseytinFinal = "(!x" + (aig.input1 - 1) + "+" +  "!_" + aig.input2 + "+" + "_" + aig.output + ")"
-                           + "*(x" + (aig.input1 - 1) + "+" + "!_" + aig.output + ")*(_" + aig.input2 + "+" + "!_" + aig.output + ")";                           
-        } else if(!ehNegado1 && ehNegado2){
-            tseytinFinal = "(!_" + aig.input1 + "+" +  "!x" + (aig.input2 - 1) + "+" + "_" + aig.output + ")"
-                           + "*(_" + aig.input1 + "+" + "!_" + aig.output + ")*(x" + (aig.input2 - 1) + "+" + "!_" + aig.output + ")";                           
-        } else if(ehNegado1 && ehNegado2){
-            tseytinFinal = "(!x" + (aig.input1 - 1) + "+" +  "!x" + (aig.input2 - 1) + "+" + "_" + aig.output + ")"
-                           + "*(x" + (aig.input1 - 1) + "+" + "!_" + aig.output + ")*(x" + (aig.input2 - 1) + "+" + "!_" + aig.output + ")";                          
-        }
+        expressaoFinal = expressao1 + "&" + expressao2;                
         
-        if(!tseytin1.equals("")){
-            tseytinFinal = tseytinFinal + "*" + tseytin1;
-        }
-        if(!tseytin2.equals("")){
-            tseytinFinal = tseytinFinal + "*" + tseytin2;
-        }
-        
-        aig.equacao = tseytinFinal;
+        aig.equacao = expressaoFinal;
         
     }
     
-    private AIG searchAig(ArrayList<AIG> arrayAigs, int outputToSearch){
+    private AigNode searchAigNode(ArrayList<AigNode> arrayAigNodes, int outputToSearch){
         if(outputToSearch %2 == 0){ // par
-            for(int i=0; i<arrayAigs.size();i++){
-                if(arrayAigs.get(i).output == outputToSearch){
-                    return arrayAigs.get(i);
+            for(int i=0; i<arrayAigNodes.size();i++){
+                if(arrayAigNodes.get(i).output == outputToSearch){
+                    return arrayAigNodes.get(i);
                 }
             }
         } else{ // impar
-            for(int i=0; i<arrayAigs.size();i++){
-                if(arrayAigs.get(i).output == outputToSearch - 1){
-                    return arrayAigs.get(i);
+            for(int i=0; i<arrayAigNodes.size();i++){
+                if(arrayAigNodes.get(i).output == outputToSearch - 1){
+                    return arrayAigNodes.get(i);
                 }
             }
         }
@@ -138,11 +151,13 @@ public class ComparadorAAGs {
         if(numero_arquivo == 1){
             arrayEntradas1 = new ArrayList<Integer>();
             arraySaidas1 = new ArrayList<Integer>();
-            arrayAigs1 = new ArrayList<AIG>();
+            arrayAigNodesBdd1 = new ArrayList<AigNode>();
+            arrayAigNodesSat1 = new ArrayList<AigNode>();
         } else {
             arrayEntradas2 = new ArrayList<Integer>();
             arraySaidas2 = new ArrayList<Integer>();
-            arrayAigs2 = new ArrayList<AIG>();
+            arrayAigNodesBdd2 = new ArrayList<AigNode>();
+            arrayAigNodesSat2 = new ArrayList<AigNode>();
         }
         
         BufferedReader br = null;
@@ -173,8 +188,9 @@ public class ComparadorAAGs {
                             arraySaidas1.add(Integer.valueOf(line));               
                         } else if(lineNumber <= entradas1 + 1 + saidas1 + ands1){
                             String[] andLineSplit = line.split(" ");
-                            AIG aig = new AIG(Integer.valueOf(andLineSplit[1]), Integer.valueOf(andLineSplit[2]), Integer.valueOf(andLineSplit[0]));
-                            arrayAigs1.add(aig);
+                            AigNode aig = new AigNode(Integer.valueOf(andLineSplit[1]), Integer.valueOf(andLineSplit[2]), Integer.valueOf(andLineSplit[0]));
+                            arrayAigNodesBdd1.add(aig);
+                            arrayAigNodesSat1.add(aig);
                         }
                     } else{
                         if(lineNumber <= entradas2 + 1){
@@ -183,8 +199,9 @@ public class ComparadorAAGs {
                             arraySaidas2.add(Integer.valueOf(line));               
                         } else if(lineNumber <= entradas2 + 1 + saidas2 + ands2){
                             String[] andLineSplit = line.split(" ");
-                            AIG aig = new AIG(Integer.valueOf(andLineSplit[1]), Integer.valueOf(andLineSplit[2]), Integer.valueOf(andLineSplit[0]));
-                            arrayAigs2.add(aig);
+                            AigNode aig = new AigNode(Integer.valueOf(andLineSplit[1]), Integer.valueOf(andLineSplit[2]), Integer.valueOf(andLineSplit[0]));
+                            arrayAigNodesBdd2.add(aig);
+                            arrayAigNodesSat2.add(aig);
                         }
                     }
                 }
@@ -234,8 +251,8 @@ public class ComparadorAAGs {
         readFile_parseAIG(arquivo2, 2);
         
         // primeiro aag
-        for(int i =0; i< arrayAigs1.size(); i++){
-            createBddExpr(arrayAigs1.get(i), 1);
+        for(int i =0; i< arrayAigNodesBdd1.size(); i++){
+            createBddExpr(arrayAigNodesBdd1.get(i), 1);
         }
         geraSaidasBdd(1);
         for(int i =0; i< arrayEquacoesBdd1.size(); i++){
@@ -243,8 +260,8 @@ public class ComparadorAAGs {
         }
         
         // segundo aag
-        for(int i =0; i< arrayAigs2.size(); i++){
-            createBddExpr(arrayAigs2.get(i), 1);
+        for(int i =0; i< arrayAigNodesBdd2.size(); i++){
+            createBddExpr(arrayAigNodesBdd2.get(i), 1);
         }
         geraSaidasBdd(2);
         for(int i=0; i< arrayEquacoesBdd2.size(); i++){
@@ -254,38 +271,38 @@ public class ComparadorAAGs {
         int numeroSaidas = arrayEquacoesBdd1.size();
         // os aags tem o mesmo numero de saidas, então usa o de um só
         for(int i=0; i<numeroSaidas; i++){
-            if(!isExpressionEquivalent(arrayEquacoesBdd1.get(i), arrayEquacoesBdd2.get(i))){
+            if(!isBddExpressionEquivalent(arrayEquacoesBdd1.get(i), arrayEquacoesBdd2.get(i))){
                 return false;
             }
         }
         
-        for(int i=0; i< arrayAigs1.size(); i++){
-            System.out.println(arrayAigs1.get(i).equacao);
+        for(int i=0; i< arrayAigNodesBdd1.size(); i++){
+            System.out.println(arrayAigNodesBdd1.get(i).equacao);
         }
         
         return true;
     }
 
-    private void createBddExpr(AIG aig, int numberArray) {
+    private void createBddExpr(AigNode aig, int numberArray) {
         String expressao1 = "";
         String expressao2 = "";
         String expressaoFinal = "";
-        AIG aigEntrada1 = null;
-        AIG aigEntrada2 = null;
+        AigNode aigEntrada1 = null;
+        AigNode aigEntrada2 = null;
         
         if(numberArray == 1){
-            aigEntrada1 = searchAig(arrayAigs1, aig.input1);
-            aigEntrada2 = searchAig(arrayAigs1, aig.input2);
+            aigEntrada1 = searchAigNode(arrayAigNodesBdd1, aig.input1);
+            aigEntrada2 = searchAigNode(arrayAigNodesBdd1, aig.input2);
         } else{
-            aigEntrada1 = searchAig(arrayAigs2, aig.input1);
-            aigEntrada2 = searchAig(arrayAigs2, aig.input2);
+            aigEntrada1 = searchAigNode(arrayAigNodesBdd2, aig.input1);
+            aigEntrada2 = searchAigNode(arrayAigNodesBdd2, aig.input2);
         }
         
         
         if(ehEntrada(aig.input1, numberArray)){
-            expressao1 = "v" + aig.input1;
+            expressao1 = "n" + aig.input1;
         } else if (ehEntrada((aig.input1 - 1), numberArray)){
-            expressao1 = "!v" + (aig.input1 - 1);
+            expressao1 = "!n" + (aig.input1 - 1);
         } else{
             expressao1 = aigEntrada1.equacao;
             if(aig.input1 %2 != 0){ // é impar, nega a entrada
@@ -293,9 +310,9 @@ public class ComparadorAAGs {
             }
         }
         if(ehEntrada(aig.input2, numberArray)){
-            expressao2 = "v" + aig.input2;
+            expressao2 = "n" + aig.input2;
         } else if (ehEntrada((aig.input2 - 1), numberArray)){
-            expressao2 = "!v" + (aig.input2 - 1);
+            expressao2 = "!n" + (aig.input2 - 1);
         } else{
             expressao2 = aigEntrada2.equacao;
             if(aig.input2 %2 != 0){ // é impar, nega a entrada
@@ -313,7 +330,7 @@ public class ComparadorAAGs {
         if(numberArray == 1){
             arrayEquacoesBdd1 = new ArrayList<String>();
             for(int i =0; i<arraySaidas1.size(); i++){
-                AIG aig = searchAig(arrayAigs1, arraySaidas1.get(i));
+                AigNode aig = searchAigNode(arrayAigNodesBdd1, arraySaidas1.get(i));
                 if(arraySaidas1.get(i) %2 == 0){ // é saida par
                     arrayEquacoesBdd1.add(aig.equacao);
                 } else{ // é saida impar
@@ -323,7 +340,7 @@ public class ComparadorAAGs {
         } else{
             arrayEquacoesBdd2 = new ArrayList<String>();
             for(int i =0; i<arraySaidas2.size(); i++){
-                AIG aig = searchAig(arrayAigs2, arraySaidas2.get(i));
+                AigNode aig = searchAigNode(arrayAigNodesBdd2, arraySaidas2.get(i));
                 if(arraySaidas2.get(i) %2 == 0){ // é saida par
                     arrayEquacoesBdd2.add(aig.equacao);
                 } else{ // é saida impar
@@ -350,7 +367,7 @@ public class ComparadorAAGs {
         }
     }
 
-    private boolean isExpressionEquivalent(String expressao1, String expressao2) {
+    private boolean isBddExpressionEquivalent(String expressao1, String expressao2) {
         try {
             File fout = new File("bddExpressions.txt");
             FileOutputStream fos = new FileOutputStream(fout);
@@ -363,7 +380,7 @@ public class ComparadorAAGs {
             bw.write(expressao2);
  
             bw.close();
-            Process execute = new ProcessBuilder("./bdd-cmp-file", "bddExpressions.txt").start();
+            Process execute = new ProcessBuilder("./ext/bdd-cmp-file", "bddExpressions.txt").start();
 
             BufferedReader stdInput = new BufferedReader(new 
             InputStreamReader(execute.getInputStream()));
@@ -383,6 +400,76 @@ public class ComparadorAAGs {
             ex.printStackTrace();
         }
         return false;
+    }
+
+    private void geraSaidasSat(int numberArray) {
+        if(numberArray == 1){
+            arrayEquacoesSat1 = new ArrayList<String>();
+            for(int i =0; i<arraySaidas1.size(); i++){
+                AigNode aig = searchAigNode(arrayAigNodesSat1, arraySaidas1.get(i));
+                if(arraySaidas1.get(i) %2 == 0){ // é saida par
+                    arrayEquacoesSat1.add(aig.equacao);
+                } else{ // é saida impar
+                    arrayEquacoesSat1.add("!(" + aig.equacao + ")");
+                }
+            }
+        } else{
+            arrayEquacoesSat2 = new ArrayList<String>();
+            for(int i =0; i<arraySaidas2.size(); i++){
+                AigNode aig = searchAigNode(arrayAigNodesSat2, arraySaidas2.get(i));
+                if(arraySaidas2.get(i) %2 == 0){ // é saida par
+                    arrayEquacoesSat2.add(aig.equacao);
+                } else{ // é saida impar
+                    arrayEquacoesSat2.add("!(" + aig.equacao + ")");
+                }
+            }
+        }
+    }
+
+    private boolean isSatExpressionEquivalent(String expressao1, String expressao2) {
+        try {
+            File fout = new File("satExpressions.txt");
+            FileOutputStream fos = new FileOutputStream(fout);
+ 
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+ 
+            // xor entre expressao1, expressao2 e saida S
+            bw.write(exp1XorExp2(expressao1, expressao2));
+            bw.close();
+            
+            /*Process execute = new ProcessBuilder("./ext/bdd-cmp-file", "satExpressions.txt").start();
+
+            BufferedReader stdInput = new BufferedReader(new 
+            InputStreamReader(execute.getInputStream()));
+
+            BufferedReader stdError = new BufferedReader(new 
+            InputStreamReader(execute.getErrorStream()));
+
+            String s = null;
+            while ((s = stdInput.readLine()) != null) {
+                System.out.println("Retornado: " + s);
+                if(s.equals("TRUE")){
+                    return true;
+                }
+            }
+*/
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
+    private String exp1XorExp2(String expressao1, String expressao2) {
+        return "("
+            + "!(" + expressao1 + ")" + "|" + "!(" + expressao2 + ")" + "|" + "!S"
+            + ")&("
+            + "(" + expressao1 + ")" + "|" + "(" + expressao2 + ")" + "|" + "!S"
+            + ")&("
+            + "(" + expressao1 + ")" + "|" + "!(" + expressao2 + ")" + "|" + "S"
+            + ")&("
+            + "!(" + expressao1 + ")" + "|" + "(" + expressao2 + ")" + "|" + "S"
+            + ")";
     }
     
 }

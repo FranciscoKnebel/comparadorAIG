@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package aig_sat_solver;
+package aig_sat_bdd_solver;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
