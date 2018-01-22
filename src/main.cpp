@@ -1,4 +1,5 @@
 #include "aagReader.h"
+#include "sat-cmp.h"
 
 using namespace std;
 typedef chrono::high_resolution_clock Clock;
@@ -24,11 +25,11 @@ int main(int argc, char* argv[]) {
 	AIG* graph2 = reader2.readFile();
 	cout << "Leitura de " << argv[2] << " para AIG. (" << chrono::duration_cast<chrono::milliseconds>(Clock::now() - begin_time).count() << "ms)" << endl;
 
-	map<int, string> outputExpressions1;
-	map<int, string> outputExpressions2;
-
 	if(strcmp(argv[3], "--sat") == 0) {
+		cout << "Comparação utilizando SAT." << endl;
+		SAT_CMP* sat = new SAT_CMP(graph1, graph2);
 
+		sat->solveSAT();
 	} else if (strcmp(argv[3], "--bdd") == 0) {
 		cout << "Comparação utilizando BDD." << endl;
 
