@@ -20,4 +20,5 @@ public class AigNode {
     public String toString(){
         return "Input1: "+input1+" Input2: "+input2+" Output: "+output + " Equacao: " + equacao;
     }
+
 }
