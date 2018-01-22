@@ -6,10 +6,13 @@
 package aig_sat_solver;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 /**
@@ -349,10 +352,18 @@ public class ComparadorAAGs {
 
     private boolean isExpressionEquivalent(String expressao1, String expressao2) {
         try {
-            //System.out.println(System.getProperty("user.dir"));
-            //System.out.println(new File(arquivo2).getAbsolutePath());
-            // create a process and execute notepad.exe and currect environment
-            Process execute = new ProcessBuilder("./testBDD", expressao1, expressao2).start();
+            File fout = new File("bddExpressions.txt");
+            FileOutputStream fos = new FileOutputStream(fout);
+ 
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+ 
+            
+            bw.write(expressao1);
+            bw.newLine();
+            bw.write(expressao2);
+ 
+            bw.close();
+            Process execute = new ProcessBuilder("./bdd-cmp-file", "bddExpressions.txt").start();
 
             BufferedReader stdInput = new BufferedReader(new 
             InputStreamReader(execute.getInputStream()));
@@ -363,7 +374,7 @@ public class ComparadorAAGs {
             String s = null;
             while ((s = stdInput.readLine()) != null) {
                 System.out.println("Retornado: " + s);
-                if(s.equals("As duas expressões são iguais.")){
+                if(s.equals("TRUE")){
                     return true;
                 }
             }
