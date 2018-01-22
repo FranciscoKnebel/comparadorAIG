@@ -102,21 +102,21 @@ public class ComparadorAAGs {
         if(ehEntrada(aig.input1, numberArray)){
             expressao1 = "n" + aig.input1;
         } else if (ehEntrada((aig.input1 - 1), numberArray)){
-            expressao1 = "!n" + (aig.input1 - 1);
+            expressao1 = "~n" + (aig.input1 - 1);
         } else{
             expressao1 = aigEntrada1.equacao;
             if(aig.input1 %2 != 0){ // é impar, nega a entrada
-                expressao1 = "!(" + expressao1 + ")";
+                expressao1 = "~(" + expressao1 + ")";
             }
         }
         if(ehEntrada(aig.input2, numberArray)){
             expressao2 = "n" + aig.input2;
         } else if (ehEntrada((aig.input2 - 1), numberArray)){
-            expressao2 = "!n" + (aig.input2 - 1);
+            expressao2 = "~n" + (aig.input2 - 1);
         } else{
             expressao2 = aigEntrada2.equacao;
             if(aig.input2 %2 != 0){ // é impar, nega a entrada
-            expressao2 = "!("+expressao2+")";
+            expressao2 = "~("+expressao2+")";
         }
         }
         
@@ -417,7 +417,7 @@ public class ComparadorAAGs {
                 if(arraySaidas1.get(i) %2 == 0){ // é saida par
                     arrayEquacoesSat1.add(aig.equacao);
                 } else{ // é saida impar
-                    arrayEquacoesSat1.add("!(" + aig.equacao + ")");
+                    arrayEquacoesSat1.add("~(" + aig.equacao + ")");
                 }
             }
         } else{
@@ -427,7 +427,7 @@ public class ComparadorAAGs {
                 if(arraySaidas2.get(i) %2 == 0){ // é saida par
                     arrayEquacoesSat2.add(aig.equacao);
                 } else{ // é saida impar
-                    arrayEquacoesSat2.add("!(" + aig.equacao + ")");
+                    arrayEquacoesSat2.add("~(" + aig.equacao + ")");
                 }
             }
         }
@@ -479,7 +479,7 @@ public class ComparadorAAGs {
             String s2 = null;
             while ((s2 = stdInput2.readLine()) != null) {
                 System.out.println(s2);
-                if(s2.equals("SATISFIABLE")){
+                if(s2.equals("UNSATISFIABLE")){
                     return true;
                 }
             }
