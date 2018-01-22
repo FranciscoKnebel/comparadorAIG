@@ -13,7 +13,7 @@ AAG_READER_DIR = $(SRC_DIR)aag-reader/
 BDD_DIR = $(SRC_DIR)bdd-cmp/
 
 MAIN_EXECUTABLE = $(DST_DIR)comparador
-all: aag bdd
+all: aag bdd bdd-file
 	$(CC) $(CFLAGS) $(AAG_OBJ_FILES) -o $(MAIN_EXECUTABLE) -I$(AAG_READER_DIR)$(HEADER_DIR) $(SRC_DIR)main.cpp
 	@echo "Todos módulos compilados."
 
@@ -32,9 +32,12 @@ aag-main: aag
 #############################################
 ## BDD
 BDD_TESTER = $(DST_DIR)bdd-cmp
-BDD_FILES = $(BDD_DIR)testBDD.cpp $(BDD_DIR)gerentebdd.cpp
+BDD_FILES = $(BDD_DIR)gerentebdd.cpp
 bdd: $(BDD_FILES)
-	$(CC) $(BDD_FILES) -o $(BDD_TESTER) -I$(BDD_DIR)$(HEADER_DIR)
+	$(CC) $(BDD_DIR)testBDD.cpp $(BDD_FILES) -o $(BDD_TESTER) -I$(BDD_DIR)$(HEADER_DIR)
+
+bdd-file: $(BDD_FILES)
+	$(CC) $(BDD_DIR)testBDD-file.cpp $(BDD_FILES) -o $(BDD_TESTER)-file -I$(BDD_DIR)$(HEADER_DIR)
 #############################################
 ## TEST
 test: test-aag test-bdd test-main
@@ -65,6 +68,10 @@ test-bdd: bdd
 	./$(BDD_TESTER) "!(v2*v4)" "!(!(v2*v4))"
 	@echo
 	./$(BDD_TESTER) "(!(v2*v4*!(v2*v4))*!(!(v2*v4)*v2*v4))" "!(!(v2*v4)*!(v2*v4))*!(v2*v4*v2*v4)"
+
+test-bdd-file: bdd-file
+	@echo "\nTESTE DO COMPARADOR UTILIZANDO BDD, utilizando arquivos.\n"
+	./$(BDD_TESTER)-file dst/expressaologica
 #############################################
 clean:
 	rm $(OBJ_DIR)* $(DST_DIR)* -f
