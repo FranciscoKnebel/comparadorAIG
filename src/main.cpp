@@ -3,30 +3,6 @@
 using namespace std;
 typedef chrono::high_resolution_clock Clock;
 
-string exec(const char* cmd) {
-  array<char, 128> buffer;
-  string result;
-  shared_ptr<FILE> pipe(popen(cmd, "r"), pclose);
-  if (!pipe) throw runtime_error("popen() failed!");
-  while (!feof(pipe.get())) {
-    if (fgets(buffer.data(), 128, pipe.get()) != nullptr)
-      result += buffer.data();
-  }
-  return result;
-}
-
-vector<string> split(string str, char delimiter) {
-  vector<string> internal;
-  stringstream ss(str); // Turn the string into a stream.
-  string tok;
-
-  while(getline(ss, tok, delimiter)) {
-    internal.push_back(tok);
-  }
-
-  return internal;
-}
-
 int main(int argc, char* argv[]) {
 	if(argc < 4) {
 		cerr << "Invalid parameters." << endl;
@@ -61,7 +37,7 @@ int main(int argc, char* argv[]) {
 		vector<string> expressions1 = graph1->getOutputExpressions();
 		vector<string> outputExpressions1;
 		for (size_t i = 0; i < expressions1.size(); i++) {
-			vector<string> tokens = split(expressions1[i], ' ');
+			vector<string> tokens = Util::split(expressions1[i], ' ');
 			outputExpressions1.push_back(tokens[1]);
 		}
 		cout << "AIG 0 para Expressão Lógica. (" << chrono::duration_cast<chrono::milliseconds>(Clock::now() - begin_time).count() << "ms)" << endl;
@@ -71,7 +47,7 @@ int main(int argc, char* argv[]) {
 		vector<string> expressions2 = graph2->getOutputExpressions();
 		vector<string> outputExpressions2;
 		for (size_t i = 0; i < expressions2.size(); i++) {
-			vector<string> tokens = split(expressions2[i], ' ');
+			vector<string> tokens = Util::split(expressions2[i], ' ');
 			outputExpressions2.push_back(tokens[1]);
 		}
 		cout << "AIG 1 para Expressão Lógica. (" << chrono::duration_cast<chrono::milliseconds>(Clock::now() - begin_time).count() << "ms)" << endl;
@@ -90,7 +66,7 @@ int main(int argc, char* argv[]) {
 
 			string command = "./dst/bdd-cmp-file \"dst/expressoes.txt\"";
 			begin_time = Clock::now();
-			string response = exec(command.c_str());
+			string response = Util::exec(command.c_str());
 			cout << " (" << chrono::duration_cast<chrono::milliseconds>(Clock::now() - begin_time).count() << "ms" << ")";
 
 			string responseFailure = "FALSE";

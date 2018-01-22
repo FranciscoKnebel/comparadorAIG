@@ -9,6 +9,7 @@ OBJ_DIR = $(DST_DIR)obj/
 HEADER_DIR = headers/
 
 ### MODULE DIRECTORIES
+UTIL_DIR = $(SRC_DIR)util/
 AAG_READER_DIR = $(SRC_DIR)aag-reader/
 BDD_DIR = $(SRC_DIR)bdd-cmp/
 
@@ -16,6 +17,11 @@ MAIN_EXECUTABLE = $(DST_DIR)comparador
 all: aag bdd bdd-file
 	$(CC) $(CFLAGS) $(AAG_OBJ_FILES) -o $(MAIN_EXECUTABLE) -I$(AAG_READER_DIR)$(HEADER_DIR) $(SRC_DIR)main.cpp
 	@echo "Todos módulos compilados."
+
+UTIL_FILES = $(UTIL_DIR)util.cpp
+UTIL_OBJ_FILES = $(OBJ_DIR)util.o
+util: $(UTIL_FILES)
+	$(CC) $(CFLAGS) -c -o $(OBJ_DIR)util.o -I $(UTIL_DIR) $(UTIL_DIR)util.cpp
 
 #############################################
 ## AAG READER
@@ -37,7 +43,7 @@ bdd: $(BDD_FILES)
 	$(CC) $(BDD_DIR)testBDD.cpp $(BDD_FILES) -o $(BDD_TESTER) -I$(BDD_DIR)$(HEADER_DIR)
 
 bdd-file: $(BDD_FILES)
-	$(CC) $(BDD_DIR)testBDD-file.cpp $(BDD_FILES) -o $(BDD_TESTER)-file -I$(BDD_DIR)$(HEADER_DIR)
+	$(CC) $(BDD_DIR)testBDD-file.cpp $(BDD_FILES) -o $(BDD_TESTER)-file -I $(BDD_DIR)$(HEADER_DIR)
 #############################################
 ## TEST
 test: test-aag test-bdd test-main
@@ -47,12 +53,12 @@ test-main: all
 	@echo "\nTESTE DO EXECUTAVEL PRINCIPAL \n"
 	./$(MAIN_EXECUTABLE) examples/C17.aag examples/C17-v1.aag --bdd
 	@echo
-	./$(MAIN_EXECUTABLE) examples/C432.aag examples/C432-v1.aag --bdd
+	#./$(MAIN_EXECUTABLE) examples/aag/C432.aag examples/aag/C432-v1.aag --bdd
 
 LOG = $(DST_DIR)aagComentado.txt
 test-aag: aag aag-main
 	@echo "\nTESTE DO LEITOR DE AAG\n"
-	./$(AAG_READER) examples/C17.aag
+	./$(AAG_READER) examples/aag/C17.aag
 	@echo "Execução encerrada.\n"
 	@cat $(LOG)
 
@@ -68,10 +74,11 @@ test-bdd: bdd
 	./$(BDD_TESTER) "!(v2*v4)" "!(!(v2*v4))"
 	@echo
 	./$(BDD_TESTER) "(!(v2*v4*!(v2*v4))*!(!(v2*v4)*v2*v4))" "!(!(v2*v4)*!(v2*v4))*!(v2*v4*v2*v4)"
+	@echo
 
-test-bdd-file: bdd-file
+test-bdd-file: bdd-file dst/expressoes.txt
 	@echo "\nTESTE DO COMPARADOR UTILIZANDO BDD, utilizando arquivos.\n"
-	./$(BDD_TESTER)-file dst/expressaologica
+	./$(BDD_TESTER)-file dst/expressoes.txt
 #############################################
 clean:
 	rm $(OBJ_DIR)* $(DST_DIR)* -f
