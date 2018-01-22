@@ -58,7 +58,7 @@ test: test-aag test-bdd test-main
 
 test-main: all
 	@echo "\nTESTE DO EXECUTAVEL PRINCIPAL - SAT \n"
-	./$(MAIN_EXECUTABLE) examples/aag/C17.aag examples/aag/C17-v1.aag --sat
+	./$(MAIN_EXECUTABLE) examples/aag/C432.aag examples/aag/C432-v1.aag --sat
 	@echo
 	#./$(MAIN_EXECUTABLE) examples/aag/C432.aag examples/aag/C432-v1.aag --bdd
 
@@ -86,6 +86,11 @@ test-bdd: bdd
 test-bdd-file: bdd-file dst/expressoes.txt
 	@echo "\nTESTE DO COMPARADOR UTILIZANDO BDD, utilizando arquivos.\n"
 	./$(BDD_TESTER)-file dst/expressoes.txt
+
+test-minisat: ext/cryptominisat5
+	./ext/cryptominisat5 --verb 0 examples/cnf/satisfiable.cnf
+	./ext/cryptominisat5 --verb 0 examples/cnf/unsatisfiable.cnf
+
 #############################################
 clean:
 	rm $(OBJ_DIR)* $(DST_DIR)* -f

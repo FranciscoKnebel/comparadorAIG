@@ -21,7 +21,7 @@ class SAT_CMP {
 
 	public:
 		SAT_CMP(AIG* i0, AIG* i1);
-		void solveSAT();
+		bool solveSAT();
 };
 
 #endif

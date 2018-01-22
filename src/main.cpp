@@ -29,7 +29,10 @@ int main(int argc, char* argv[]) {
 		cout << "Comparação utilizando SAT." << endl;
 		SAT_CMP* sat = new SAT_CMP(graph1, graph2);
 
-		sat->solveSAT();
+		bool isSatifiable = sat->solveSAT();
+
+		cout << "\nComparação SAT finalizada." << endl;
+		cout << "Resolver SAT retornou SATISFIABLE: " << std::boolalpha << isSatifiable << endl;
 	} else if (strcmp(argv[3], "--bdd") == 0) {
 		cout << "Comparação utilizando BDD." << endl;
 
@@ -78,8 +81,8 @@ int main(int argc, char* argv[]) {
 			}
 			cout << " equivalente." << endl;
 		}
+		cout << "Estruturas totalmente equivalentes." << endl;
 	}
 
-	cout << "Estruturas totalmente equivalentes." << endl;
   return EXIT_SUCCESS;
 }
