@@ -1,0 +1,8 @@
+language: c++
+compiler: g++
+dist: trusty
+sudo: required
+script:
+  - g++ --version
+  - make
+  - make test
