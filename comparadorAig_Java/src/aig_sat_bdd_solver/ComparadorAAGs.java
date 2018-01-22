@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package aig_sat_bdd_solver;
 
 import java.io.BufferedReader;
@@ -16,9 +11,9 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 /**
- *
- * @author luciano
+ * @author luciano/rodrigo
  */
+
 public class ComparadorAAGs {
 
     int entradas1 = 0;
@@ -31,8 +26,7 @@ public class ComparadorAAGs {
     ArrayList<AigNode> arrayAigNodesSat1;
     ArrayList<String> arrayEquacoesBdd1;
     ArrayList<String> arrayEquacoesSat1;
-    
-        
+       
     int entradas2 = 0;
     int saidas2 = 0;
     int ands2 = 0;
@@ -43,15 +37,17 @@ public class ComparadorAAGs {
     ArrayList<AigNode> arrayAigNodesSat2;
     ArrayList<String> arrayEquacoesBdd2;
     ArrayList<String> arrayEquacoesSat2;
+     
     
-    
-        
+    //chama o parser para ler os arquivos
+    //chama a criação da expressãoSAT
+    //chama a geração das saidasSAT
+    //chama o teste de equivalênciaSAT
     boolean compararSat(String arquivo1, String arquivo2) {
         
         readFile_parseAIG(arquivo1, 1);
         readFile_parseAIG(arquivo2, 2);
         
-        //primeiro aag
         for(int i =0; i< arrayAigNodesSat1.size(); i++){
             createSatExpr(arrayAigNodesSat1.get(i), 1);
         }
@@ -60,7 +56,6 @@ public class ComparadorAAGs {
             System.out.println(arrayAigNodesSat1.get(i).toString());
         }
         
-        //segundo aag
         for(int i =0; i< arrayAigNodesSat2.size(); i++){
             createSatExpr(arrayAigNodesSat2.get(i), 2);
         }
@@ -86,10 +81,13 @@ public class ComparadorAAGs {
         
     }
     
+    //recebe o nodo e vai concatenando em expressões
     private void createSatExpr(AigNode aig, int numberArray) {
+        
         String expressao1 = "";
         String expressao2 = "";
         String expressaoFinal = "";
+        
         AigNode aigEntrada1 = null;
         AigNode aigEntrada2 = null;
         
@@ -100,7 +98,6 @@ public class ComparadorAAGs {
             aigEntrada1 = searchAigNode(arrayAigNodesSat2, aig.input1);
             aigEntrada2 = searchAigNode(arrayAigNodesSat2, aig.input2);
         }
-        
         
         if(ehEntrada(aig.input1, numberArray)){
             expressao1 = "n" + aig.input1;
@@ -129,7 +126,9 @@ public class ComparadorAAGs {
         
     }
     
+    //procura por um nodo no array que tenha a saida igual a outputToSearch e retorna ele
     private AigNode searchAigNode(ArrayList<AigNode> arrayAigNodes, int outputToSearch){
+        
         if(outputToSearch %2 == 0){ // par
             for(int i=0; i<arrayAigNodes.size();i++){
                 if(arrayAigNodes.get(i).output == outputToSearch){
@@ -146,8 +145,9 @@ public class ComparadorAAGs {
         return null;
     }
     
-     
+    // le o arquivo aag e parseia pra um array de AIG 
     public void readFile_parseAIG(String arquivo, int numero_arquivo){
+        
         if(numero_arquivo == 1){
             arrayEntradas1 = new ArrayList<Integer>();
             arraySaidas1 = new ArrayList<Integer>();
@@ -161,12 +161,13 @@ public class ComparadorAAGs {
         }
         
         BufferedReader br = null;
+        
         try {
             br = new BufferedReader(new FileReader(arquivo));
             String line;
             int lineNumber = 0;
+            
             while ((line = br.readLine()) != null) {
-                //System.out.println(line);
                 lineNumber++;
                 if(lineNumber == 1){
                     String[] splitLine = line.split(" ");
@@ -215,10 +216,6 @@ public class ComparadorAAGs {
                     for(int i=0; i<arraySaidas1.size();i++){
                         System.out.println(arraySaidas1.get(i));
                     }
-                    /*System.out.println("Aigs: ");
-                    for(int i=0; i<arrayAigs1.size();i++){
-                        System.out.println(arrayAigs1.get(i).toString());
-                    }*/
                 } else{
                     for(int i=0; i<arrayEntradas2.size();i++){
                         System.out.println(arrayEntradas2.get(i));
@@ -227,10 +224,6 @@ public class ComparadorAAGs {
                     for(int i=0; i<arraySaidas2.size();i++){
                         System.out.println(arraySaidas2.get(i));
                     }
-                    /*System.out.println("Aigs: ");
-                    for(int i=0; i<arrayAigs2.size();i++){
-                        System.out.println(arrayAigs2.get(i).toString());
-                    }*/
                 }
             
         } catch (IOException e) {
@@ -245,12 +238,16 @@ public class ComparadorAAGs {
             }
         }
     }
-
+    
+    // chama o parser para ler os arquivos
+    // chama criação das expressoesBDD
+    // chama a geração de saidasBDD
+    // chama o teste de equivalênciaBDD
     boolean compararBdd(String arquivo1, String arquivo2) {
+        
         readFile_parseAIG(arquivo1, 1);
         readFile_parseAIG(arquivo2, 2);
         
-        // primeiro aag
         for(int i =0; i< arrayAigNodesBdd1.size(); i++){
             createBddExpr(arrayAigNodesBdd1.get(i), 1);
         }
@@ -259,7 +256,6 @@ public class ComparadorAAGs {
             System.out.println(arrayEquacoesBdd1.get(i));       
         }
         
-        // segundo aag
         for(int i =0; i< arrayAigNodesBdd2.size(); i++){
             createBddExpr(arrayAigNodesBdd2.get(i), 1);
         }
@@ -269,6 +265,7 @@ public class ComparadorAAGs {
         }
         
         int numeroSaidas = arrayEquacoesBdd1.size();
+        
         // os aags tem o mesmo numero de saidas, então usa o de um só
         for(int i=0; i<numeroSaidas; i++){
             if(!isBddExpressionEquivalent(arrayEquacoesBdd1.get(i), arrayEquacoesBdd2.get(i))){
@@ -282,11 +279,14 @@ public class ComparadorAAGs {
         
         return true;
     }
-
+    
+    //cria a expressão do BDD, expressão lógica simples com ands e nots
     private void createBddExpr(AigNode aig, int numberArray) {
+        
         String expressao1 = "";
         String expressao2 = "";
         String expressaoFinal = "";
+        
         AigNode aigEntrada1 = null;
         AigNode aigEntrada2 = null;
         
@@ -297,8 +297,7 @@ public class ComparadorAAGs {
             aigEntrada1 = searchAigNode(arrayAigNodesBdd2, aig.input1);
             aigEntrada2 = searchAigNode(arrayAigNodesBdd2, aig.input2);
         }
-        
-        
+                
         if(ehEntrada(aig.input1, numberArray)){
             expressao1 = "n" + aig.input1;
         } else if (ehEntrada((aig.input1 - 1), numberArray)){
@@ -324,7 +323,8 @@ public class ComparadorAAGs {
         
         aig.equacao = expressaoFinal;
     }
-
+    
+    //gera as saidas dos BDDs
     private void geraSaidasBdd(int numberArray){
         
         if(numberArray == 1){
@@ -349,7 +349,10 @@ public class ComparadorAAGs {
             }
         }
     }
+    
+    //teste se uma determinada variavel é uma entrada
     private boolean ehEntrada(int numeroEntrada, int numberArray) {
+       
         if(numberArray == 1){
             for(int i=0; i<arrayEntradas1.size(); i++){
                 if(arrayEntradas1.get(i) == numeroEntrada){
@@ -366,7 +369,9 @@ public class ComparadorAAGs {
             return false;
         }
     }
-
+    
+    //salva as expressões a serem testadas em um arquivo
+    //passa este arquivo como parametro para o resolvedor de bdd do professor
     private boolean isBddExpressionEquivalent(String expressao1, String expressao2) {
         try {
             File fout = new File("bddExpressions.txt");
@@ -374,7 +379,6 @@ public class ComparadorAAGs {
  
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
  
-            
             bw.write(expressao1);
             bw.newLine();
             bw.write(expressao2);
@@ -402,7 +406,10 @@ public class ComparadorAAGs {
         return false;
     }
 
+    
+    //gera as saidas SAT
     private void geraSaidasSat(int numberArray) {
+      
         if(numberArray == 1){
             arrayEquacoesSat1 = new ArrayList<String>();
             for(int i =0; i<arraySaidas1.size(); i++){
@@ -425,8 +432,11 @@ public class ComparadorAAGs {
             }
         }
     }
-
+    
+    //testa se duas expressoes sao SAT equivalentes
+    //salva as expressões em um arquivo
     private boolean isSatExpressionEquivalent(String expressao1, String expressao2) {
+        
         try {
             File fout = new File("satExpressions.txt");
             FileOutputStream fos = new FileOutputStream(fout);
@@ -460,6 +470,7 @@ public class ComparadorAAGs {
         return false;
     }
 
+    //faz o xor entre duas expressões
     private String exp1XorExp2(String expressao1, String expressao2) {
         return "("
             + "!(" + expressao1 + ")" + "|" + "!(" + expressao2 + ")" + "|" + "!S"
