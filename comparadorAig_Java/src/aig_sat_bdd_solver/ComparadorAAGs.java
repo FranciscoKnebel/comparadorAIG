@@ -100,27 +100,27 @@ public class ComparadorAAGs {
         }
         
         if(ehEntrada(aig.input1, numberArray)){
-            expressao1 = "n" + aig.input1;
+            expressao1 = "n1" + aig.input1;
         } else if (ehEntrada((aig.input1 - 1), numberArray)){
-            expressao1 = "~n" + (aig.input1 - 1);
+            expressao1 = "!n1" + (aig.input1 - 1);
         } else{
             expressao1 = aigEntrada1.equacao;
             if(aig.input1 %2 != 0){ // é impar, nega a entrada
-                expressao1 = "~(" + expressao1 + ")";
+                expressao1 = "!(" + expressao1 + ")";
             }
         }
         if(ehEntrada(aig.input2, numberArray)){
-            expressao2 = "n" + aig.input2;
+            expressao2 = "n2" + aig.input2;
         } else if (ehEntrada((aig.input2 - 1), numberArray)){
-            expressao2 = "~n" + (aig.input2 - 1);
+            expressao2 = "!n2" + (aig.input2 - 1);
         } else{
             expressao2 = aigEntrada2.equacao;
             if(aig.input2 %2 != 0){ // é impar, nega a entrada
-            expressao2 = "~("+expressao2+")";
+            expressao2 = "!("+expressao2+")";
         }
         }
         
-        expressaoFinal = expressao1 + "&" + expressao2;                
+        expressaoFinal = expressao1 + " & " + expressao2;                
         
         aig.equacao = expressaoFinal;
         
@@ -417,7 +417,7 @@ public class ComparadorAAGs {
                 if(arraySaidas1.get(i) %2 == 0){ // é saida par
                     arrayEquacoesSat1.add(aig.equacao);
                 } else{ // é saida impar
-                    arrayEquacoesSat1.add("~(" + aig.equacao + ")");
+                    arrayEquacoesSat1.add("!(" + aig.equacao + ")");
                 }
             }
         } else{
@@ -427,7 +427,7 @@ public class ComparadorAAGs {
                 if(arraySaidas2.get(i) %2 == 0){ // é saida par
                     arrayEquacoesSat2.add(aig.equacao);
                 } else{ // é saida impar
-                    arrayEquacoesSat2.add("~(" + aig.equacao + ")");
+                    arrayEquacoesSat2.add("!(" + aig.equacao + ")");
                 }
             }
         }
@@ -447,7 +447,7 @@ public class ComparadorAAGs {
             bw.write(exp1XorExp2(expressao1, expressao2));
             bw.close();
             
-            Process execute = new ProcessBuilder("./ext/limboole", "-d", "satExpressions.txt").start();
+            Process execute = new ProcessBuilder("./ext/limboole", "-s", "satExpressions.txt").start();
 
             BufferedReader stdInput = new BufferedReader(new 
             InputStreamReader(execute.getInputStream()));
@@ -456,30 +456,9 @@ public class ComparadorAAGs {
             InputStreamReader(execute.getErrorStream()));
 
             String s = null;
-            File fout2 = new File("satExpressions.cnf");
-            FileOutputStream fos2 = new FileOutputStream(fout2);
-            BufferedWriter bw2 = new BufferedWriter(new OutputStreamWriter(fos2));
-            
             while ((s = stdInput.readLine()) != null) {
                 System.out.println(s);
-                bw2.write(s);
-                bw2.newLine();
-            }
-            
-            bw2.close();
-            
-            Process execute2 = new ProcessBuilder("./ext/minisat", "satExpressions.cnf").start();
-
-            BufferedReader stdInput2 = new BufferedReader(new 
-            InputStreamReader(execute2.getInputStream()));
-
-            BufferedReader stdError2 = new BufferedReader(new 
-            InputStreamReader(execute2.getErrorStream()));
-
-            String s2 = null;
-            while ((s2 = stdInput2.readLine()) != null) {
-                System.out.println(s2);
-                if(s2.equals("UNSATISFIABLE")){
+                if(s.contains("UNSATISFIABLE")){
                     return true;
                 }
             }
@@ -492,14 +471,11 @@ public class ComparadorAAGs {
     //faz o xor entre duas expressões
     private String exp1XorExp2(String expressao1, String expressao2) {
         return "("
-            + "!(" + expressao1 + ")" + "|" + "!(" + expressao2 + ")" + "|" + "!S"
-            + ")&("
-            + "(" + expressao1 + ")" + "|" + "(" + expressao2 + ")" + "|" + "!S"
-            + ")&("
-            + "(" + expressao1 + ")" + "|" + "!(" + expressao2 + ")" + "|" + "S"
-            + ")&("
-            + "!(" + expressao1 + ")" + "|" + "(" + expressao2 + ")" + "|" + "S"
-            + ")";
+            + "!(" + expressao1 + ")" + "&" + "(" + expressao2 + ")"
+            + ")|("
+            + "(" + expressao1 + ")" + "&" + "!(" + expressao2 + "))";
+           
+            
     }
     
 }
