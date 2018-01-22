@@ -23,7 +23,7 @@ bool SAT_CMP::solveSAT() {
 		// Conjunctive normal form (CNF) for a XOR sub-expression
 		// (!A|!B|!C)&(A|B|!C)&(A|!B|C)&(!A|B|C)
 		string cnfXOR =
-		"(!" + A + "|!" + B + "|!C)&(" + A + "|" + B + "|!C)&(" + A + "|!" + B + "|C)&(!" + A + "|" + B + "|C)";
+		"(!" + A + "&" + B + ")|(" + A + "&!" + B + ")";
 		// Replace * with &
    	replace(cnfXOR.begin(), cnfXOR.end(), '*', '&');
 		// Remove double negatives
@@ -37,25 +37,10 @@ bool SAT_CMP::solveSAT() {
 		outputFile.close();
 		cout << " (" << chrono::duration_cast<chrono::milliseconds>(Clock::now() - begin_time).count() << "ms" << ")" << endl;
 
-		// Pass boolean expression to Limboole (Boolean to CNF)
-		cout << "[" << i << "] Conversão expressão -> CNF";
+		// Pass boolean expression to Limboole (Boolean to CNF to SAT solver)
+		cout << "[" << i << "] Conversão expressão -> CNF -> SAT solver";
 		begin_time = Clock::now();
-		string command = "./ext/limboole.exe -d dst/limboole_exp.txt";
-		string CNFresponse = Util::exec(command.c_str());
-		cout << " (" << chrono::duration_cast<chrono::milliseconds>(Clock::now() - begin_time).count() << "ms" << ")" << endl;
-
-		// Save CNF file
-		cout << "[" << i << "] Salvando CNF em arquivo externo";
-		begin_time = Clock::now();
-		outputFile.open("dst/limboole_exp.cnf", ofstream::trunc);
-		outputFile << CNFresponse;
-		outputFile.close();
-		cout << " (" << chrono::duration_cast<chrono::milliseconds>(Clock::now() - begin_time).count() << "ms" << ")" << endl;
-
-		// Pass CNF file to SAT-solver.
-		cout << "[" << i << "] Passando CNF para resolvedor SAT";
-		begin_time = Clock::now();
-		command = "./ext/cryptominisat5 --verb 0 dst/limboole_exp.cnf";
+		string command = "./ext/limboole.exe -s dst/limboole_exp.txt";
 		string SATresponse = Util::exec(command.c_str());
 		cout << " (" << chrono::duration_cast<chrono::milliseconds>(Clock::now() - begin_time).count() << "ms" << ")" << endl;
 
@@ -68,25 +53,20 @@ bool SAT_CMP::solveSAT() {
 		cout << " (" << chrono::duration_cast<chrono::milliseconds>(Clock::now() - begin_time).count() << "ms" << ")" << endl;
 
 		// Read file and find if SATISFIABLE
-		// if not, quit and return false.
+		// if found, quit and return false.
 		// else test next expression
 		ifstream inputFile;
 		inputFile.open("dst/sat_response.txt");
 		string line;
-		string answer;
 		size_t found;
-		while(getline(inputFile, line)) {
-			found = line.find("s ");
 
-			if(found != string::npos) {
-				answer = line.substr(2);
+		getline(inputFile, line);
+		found = line.find("% UNSATISFIABLE formula");
+		cout << "[" << i << "] " << line.substr(2) << endl;
 
-				cout << "[" << i << "] " << answer << endl;
-
-				if(answer != "SATISFIABLE") {
-					return false;
-				}
-			}
+		if(found == string::npos) {
+			// not found, so IS SATISFIABLE
+			return false;
 		}
 	}
 

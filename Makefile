@@ -57,12 +57,19 @@ test: test-aag test-bdd test-main-bdd test-main-sat
 	@echo "\n\nTESTES FINALIZADOS."
 
 test-main-bdd: all
-	@echo "\nTESTE DO EXECUTAVEL PRINCIPAL - BDD \n"
+	@echo "\nTESTE DO EXECUTAVEL PRINCIPAL - BDD"
+	@echo "\nTESTE EQUIVALENTE"
 	./$(MAIN_EXECUTABLE) examples/aag/C17.aag examples/aag/C17-v1.aag --bdd
+	@echo "\nTESTE NÃO-EQUIVALENTE"
+	./$(MAIN_EXECUTABLE) examples/aag/C17.aag examples/aag/fullAdder.aag --bdd
 
 test-main-sat: all
-	@echo "\nTESTE DO EXECUTAVEL PRINCIPAL - SAT \n"
+	@echo "\nTESTE DO EXECUTAVEL PRINCIPAL - SAT"
+	@echo "\nTESTE EQUIVALENTE"
 	./$(MAIN_EXECUTABLE) examples/aag/C432.aag examples/aag/C432-v1.aag --sat
+	@echo "\nTESTE NÃO-EQUIVALENTE"
+	./$(MAIN_EXECUTABLE) examples/aag/C432.aag examples/aag/C17.aag --sat
+
 
 LOG = $(DST_DIR)aagComentado.txt
 test-aag: aag aag-main
@@ -88,15 +95,6 @@ test-bdd: bdd
 test-bdd-file: bdd-file dst/expressoes.txt
 	@echo "\nTESTE DO COMPARADOR UTILIZANDO BDD, utilizando arquivos.\n"
 	./$(BDD_TESTER)-file dst/expressoes.txt
-
-test-minisat: test-minisat-1 test-minisat-2
-
-test-minisat-1: ext/cryptominisat5
-	./ext/cryptominisat5_Linux64 --verb 0 examples/cnf/satisfiable.cnf
-
-test-minisat-2:
-	./ext/cryptominisat5_simple --verb=0 examples/cnf/unsatisfiable.cnf
-
 #############################################
 clean:
 	rm $(OBJ_DIR)* $(DST_DIR)* -f

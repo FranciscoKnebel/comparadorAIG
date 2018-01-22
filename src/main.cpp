@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
 		bool isSatifiable = sat->solveSAT();
 
 		cout << "\nComparação SAT finalizada." << endl;
-		cout << "Resolver SAT retornou SATISFIABLE: " << std::boolalpha << isSatifiable << endl;
+		cout << "Resolvedor SAT retornou equivalência: " << std::boolalpha << isSatifiable << endl;
 	} else if (strcmp(argv[3], "--bdd") == 0) {
 		cout << "Comparação utilizando BDD." << endl;
 
