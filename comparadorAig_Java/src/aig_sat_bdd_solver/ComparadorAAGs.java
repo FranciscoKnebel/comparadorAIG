@@ -447,7 +447,7 @@ public class ComparadorAAGs {
             bw.write(exp1XorExp2(expressao1, expressao2));
             bw.close();
             
-            /*Process execute = new ProcessBuilder("./ext/bdd-cmp-file", "satExpressions.txt").start();
+            Process execute = new ProcessBuilder("./ext/limboole", "-d", "satExpressions.txt").start();
 
             BufferedReader stdInput = new BufferedReader(new 
             InputStreamReader(execute.getInputStream()));
@@ -456,14 +456,33 @@ public class ComparadorAAGs {
             InputStreamReader(execute.getErrorStream()));
 
             String s = null;
+            File fout2 = new File("satExpressions.cnf");
+            FileOutputStream fos2 = new FileOutputStream(fout2);
+            BufferedWriter bw2 = new BufferedWriter(new OutputStreamWriter(fos2));
+            
             while ((s = stdInput.readLine()) != null) {
-                System.out.println("Retornado: " + s);
-                if(s.equals("TRUE")){
+                System.out.println(s);
+                bw2.write(s);
+                bw2.newLine();
+            }
+            
+            bw2.close();
+            
+            Process execute2 = new ProcessBuilder("./ext/minisat", "satExpressions.cnf").start();
+
+            BufferedReader stdInput2 = new BufferedReader(new 
+            InputStreamReader(execute2.getInputStream()));
+
+            BufferedReader stdError2 = new BufferedReader(new 
+            InputStreamReader(execute2.getErrorStream()));
+
+            String s2 = null;
+            while ((s2 = stdInput2.readLine()) != null) {
+                System.out.println(s2);
+                if(s2.equals("SATISFIABLE")){
                     return true;
                 }
             }
-*/
-
         } catch (Exception ex) {
             ex.printStackTrace();
         }
