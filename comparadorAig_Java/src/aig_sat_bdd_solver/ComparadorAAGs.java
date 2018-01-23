@@ -116,9 +116,9 @@ public class ComparadorAAGs {
         
         //testa se variavel é entrada do aag ou não
         if(ehEntrada(aig.input1, numberArray)){
-            expressao1 = "n1" + aig.input1;
+            expressao1 = "n" + aig.input1;
         } else if (ehEntrada((aig.input1 - 1), numberArray)){
-            expressao1 = "!n1" + (aig.input1 - 1);
+            expressao1 = "!n" + (aig.input1 - 1);
         } else{
             expressao1 = aigEntrada1.equacao;
             if(aig.input1 %2 != 0){ // é impar, nega a entrada
@@ -128,9 +128,9 @@ public class ComparadorAAGs {
         
         //testa se variavel é entrada do aag ou não
         if(ehEntrada(aig.input2, numberArray)){
-            expressao2 = "n2" + aig.input2;
+            expressao2 = "n" + aig.input2;
         } else if (ehEntrada((aig.input2 - 1), numberArray)){
-            expressao2 = "!n2" + (aig.input2 - 1);
+            expressao2 = "!n" + (aig.input2 - 1);
         } else{
             expressao2 = aigEntrada2.equacao;
             if(aig.input2 %2 != 0){ // é impar, nega a entrada
