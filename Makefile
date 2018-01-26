@@ -72,7 +72,7 @@ test-main-sat: all
 
 
 LOG = $(DST_DIR)aagComentado.txt
-test-aag: aag aag-main
+test-aag: util aag aag-main
 	@echo "\nTESTE DO LEITOR DE AAG\n"
 	./$(AAG_READER) examples/aag/C17.aag
 	@echo "Execução encerrada.\n"

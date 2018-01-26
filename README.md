@@ -3,7 +3,10 @@
 [![Build Status](https://travis-ci.com/FranciscoKnebel/comparadorAig.svg?token=XTCGVcTeCasm1L7c4fss&branch=master)](https://travis-ci.com/FranciscoKnebel/comparadorAig)
 
 Implementação de dois comparadores de AAG para verificar equivalência lógica.
+
 A aplicação converte o arquivo AAG para uma estrutura [AIG](https://en.wikipedia.org/wiki/And-inverter_graph) e depois converte para uso em um dos comparadores disponíveis.
+
+Comparador desenvolvido para a disciplina _INF01205 CAD para Sistemas Digitais_.
 
 ## Building
 #### Make
