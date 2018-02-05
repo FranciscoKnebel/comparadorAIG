@@ -1,6 +1,6 @@
 # Comparador AIG
 
-[![Build Status](https://travis-ci.com/FranciscoKnebel/comparadorAig.svg?token=XTCGVcTeCasm1L7c4fss&branch=master)](https://travis-ci.com/FranciscoKnebel/comparadorAig)
+[![Build Status](https://travis-ci.org/FranciscoKnebel/comparadorAIG.svg?branch=master)](https://travis-ci.org/FranciscoKnebel/comparadorAIG)
 
 Implementação de dois comparadores de AAG para verificar equivalência lógica.
 
